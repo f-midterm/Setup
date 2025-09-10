@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: devops-mysql-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    # --- HEALTHCHECK SECTION (ADDED) ---
+    # นี่คือส่วนที่เพิ่มเข้ามาเพื่อตรวจสอบว่า MySQL พร้อมใช้งานจริงๆ หรือยัง
+    healthcheck:
+      # คำสั่งที่ใช้เช็ค: ลอง login เข้า MySQL ด้วย user 'root'
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s   # เช็คทุกๆ 10 วินาที
+      timeout: 5s     # ถ้าคำสั่งค้างเกิน 5 วินาที ถือว่าไม่ผ่าน
+      retries: 5      # พยายาม 5 ครั้งถ้ายังไม่ผ่าน
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: devops-phpmyadmin
+    ports:
+      - "${PMA_PORT}:80"
+    environment:
+      - PMA_HOST=db
+      - UPLOAD_LIMIT=1G
+    # --- DEPENDS_ON SECTION (UPDATED) ---
+    # แก้ไขให้รอจนกว่า healthcheck ของ 'db' จะผ่าน (status: healthy)
+    depends_on:
+      db:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: devops-backend
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_USER}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: devops-frontend
+    # ใช้ Nginx ขนาดเล็กสำหรับ serve ไฟล์ React ที่ build แล้วใน Production
+    # (Dockerfile ของ frontend จะต้อง build และ copy ไฟล์ไปใส่ใน image ของ Nginx)
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: devops-nginx
+    ports:
+      - "${NGINX_PORT}:80"
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  mysql_data:
+

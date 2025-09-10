@@ -1,0 +1,23 @@
+# Use the official Node.js image
+FROM node:22-alpine
+
+# Set the working directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the application's source code
+COPY . .
+
+# Expose the correct port for Vite
+# Changed from 3000 to 5173 to match vite.config.js
+EXPOSE 5173
+
+# Command to run the app in development mode
+# This should match the "dev" script in your package.json
+CMD ["npm", "run", "dev"]
+

@@ -1,0 +1,26 @@
+# Use an official OpenJDK runtime as a parent image
+FROM openjdk:21-jdk-slim
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy Gradle wrapper, build script, and settings FIRST
+COPY gradlew build.gradle settings.gradle ./
+COPY gradle ./gradle
+
+# NOW grant execution permission to the Gradle wrapper
+RUN chmod +x ./gradlew
+
+# Download dependencies. This layer is cached during Docker builds.
+# We'll run a build to fetch all dependencies.
+RUN ./gradlew build --no-daemon || return 0
+
+# Copy the project source code
+COPY src ./src
+
+# The port that the application will run on
+EXPOSE 8080
+
+# Command to run the application with hot-reloading
+CMD ["./gradlew", "bootRun"]
+

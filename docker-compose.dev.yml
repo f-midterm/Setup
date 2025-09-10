@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend:/app
+      # Exclude build artifacts and IDE files from being mounted
+      - /app/build
+      - /app/.gradle
+      - /app/.idea
+    # Pass database connection details from .env file to the Spring Boot application
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/${MYSQL_DATABASE}?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_USER}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./frontend:/app
+      # Exclude node_modules from being mounted to use the one installed in the container
+      - /app/node_modules
+    environment:
+      # Ensures Vite dev server is accessible within the Docker network
+      - HOST=0.0.0.0
+      - PORT=${FRONTEND_INTERNAL_PORT}
+
+  nginx:
+    ports:
+      # Map port 80 from your local machine to port 80 in the Nginx container
+      - "${NGINX_PORT}:80"
+
