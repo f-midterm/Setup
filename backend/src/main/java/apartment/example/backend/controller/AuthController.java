@@ -1,44 +1,69 @@
 package apartment.example.backend.controller;
 
 import apartment.example.backend.dto.LoginRequest;
+import apartment.example.backend.dto.LoginResponse;
+import apartment.example.backend.dto.RegisterRequest;
 import apartment.example.backend.entity.User;
-import apartment.example.backend.repository.UserRepository;
+import apartment.example.backend.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
-// @RestController บอก Spring ว่าคลาสนี้ทำหน้าที่เป็น API Controller
+// This controller handles authentication requests like login and register.
 @RestController
-// @RequestMapping("/api/auth") กำหนด path หลักสำหรับ API ทั้งหมดในคลาสนี้
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    // @Autowired เป็นการ "ฉีด" หรือใส่ UserRepository ที่ Spring สร้างไว้ให้เข้ามาใน Controller
-    // เพื่อให้เราสามารถเรียกใช้ method ต่างๆ ของมันได้
     @Autowired
-    private UserRepository userRepository;
+    private AuthService authService;
 
-    // @PostMapping("/login") บอกว่า method นี้จะทำงานเมื่อมี HTTP POST request มาที่ /api/auth/login
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    // Handles the user login request.
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        // @RequestBody บอกให้ Spring แปลง JSON ที่ส่งมาจาก Frontend มาเป็น object LoginRequest
+        try {
+            // Spring Security will check if the email and password are correct.
+            // We use the email as the 'username' for authentication.
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+            );
 
-        // ค้นหา user จาก username ที่ส่งมา
-        Optional<User> userOptional = userRepository.findByUsername(loginRequest.getUsername());
+            // If login is successful, set the authentication in the security context.
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // ตรวจสอบว่าเจอ user ไหม และรหัสผ่านตรงกันหรือเปล่า
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            if (user.getPassword().equals(loginRequest.getPassword())) {
-                // ถ้าทุกอย่างถูกต้อง, ส่งข้อความ "Login successful" กลับไปพร้อม status 200 OK
-                return ResponseEntity.ok("Login successful");
-            }
+            // Get the user's role (e.g., "USER" or "ADMIN") to send back.
+            String role = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .findFirst()
+                    .orElse("USER"); // Default to USER if no role is found.
+
+            // Send a success response with the user's role.
+            return ResponseEntity.ok(new LoginResponse("Login successful!", role));
+
+        } catch (Exception e) {
+            // If authentication fails, send an unauthorized error.
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
         }
+    }
 
-        // ถ้าไม่เจอ user หรือรหัสผ่านผิด, ส่งข้อความ "Invalid username or password" กลับไปพร้อม status 401 Unauthorized
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+    // Handles the user registration request.
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
+        try {
+            User user = authService.register(registerRequest);
+            return ResponseEntity.ok("Registration successful for user: " + user.getEmail());
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Registration failed");
+        }
     }
 }
