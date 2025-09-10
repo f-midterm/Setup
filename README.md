@@ -17,12 +17,14 @@ Follow these steps to get your development environment set up and running.
 ```bash
 git clone <your-repository-url>
 cd <your-project-directory>
+```
 
 ### 2. Start the Services
 ```bash
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d
+```
 
 ### 3. Stop the Services
 ```bash
 docker-compose down
-
+```
