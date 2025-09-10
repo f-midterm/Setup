@@ -15,7 +15,7 @@ Follow these steps to get your development environment set up and running.
 ### 1. Clone the Repository
 
 ```bash
-[git clone https://github.com/f-midterm/q.git
+git clone https://github.com/f-midterm/q.git
 cd <your-project-directory>
 ```
 
