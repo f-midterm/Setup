@@ -29,12 +29,12 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d
 docker-compose down
 ```
 
-### 4. Databases Username
+### 4. Databases Username - [Database Admin:](http://localhost:8081)
 ```bash
 apartment
 ```
 
-### 5. Databases Password
+### 5. Databases Password - [Database Admin:](http://localhost:8081)
 ```bash
 apartment_password
 ```
