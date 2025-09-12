@@ -5,44 +5,58 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Data;
 
-// @Entity บอก Spring ว่าคลาสนี้คือ "โมเดล" ที่ใช้เชื่อมกับตารางในฐานข้อมูล
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import java.util.Collection;
+import java.util.Collections;
+
+// Why: @Table(name = "users") เป็นการระบุชื่อตารางในฐานข้อมูลให้ชัดเจน
+// เพื่อหลีกเลี่ยงปัญหาชื่อ "user" ซึ่งอาจเป็นคำสงวนใน SQL บางเวอร์ชัน
 @Entity
-// @Table(name = "users") บอกให้เชื่อมกับตารางชื่อ "users" ที่เราสร้างไว้
 @Table(name = "users")
-public class User {
+@Data
+// Why: ทำให้คลาส User ของเราเข้ากันได้กับ Spring Security
+// โดย implement interface UserDetails ซึ่งบังคับให้เราต้องมี method บางอย่าง
+public class User implements UserDetails {
 
-    // @Id และ @GeneratedValue บอกว่า field 'id' คือ Primary Key และให้ฐานข้อมูลสร้างค่าให้อัตโนมัติ
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String username;
+
     private String password;
 
-    // Getters and Setters
-    // เป็น method มาตรฐานสำหรับให้ code ส่วนอื่นเข้ามาอ่านหรือแก้ไขค่าใน field ต่างๆ ได้
-    public Long getId() {
-        return id;
+    private String email;
+
+    // Why: เมธอดนี้ใช้สำหรับระบุ "สิทธิ์" หรือ "Role" ของผู้ใช้
+    // ในโปรเจกต์นี้เรามีแค่ Admin ดังนั้นเราจึง return ค่าว่างไปก่อนได้
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.emptyList();
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    // Why: เมธอดเหล่านี้ใช้ตรวจสอบสถานะของบัญชีผู้ใช้ เช่น บัญชีหมดอายุ, ถูกล็อค
+    // สำหรับตอนนี้เราตั้งให้เป็น true ทั้งหมด เพื่อให้ใช้งานได้เสมอ
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    public String getUsername() {
-        return username;
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }
