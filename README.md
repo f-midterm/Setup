@@ -15,8 +15,8 @@ Follow these steps to get your development environment set up and running.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/f-midterm/q.git
-cd q
+git clone https://github.com/f-midterm/Setup.git
+cd Setup
 ```
 
 ### 2. Start the Services
