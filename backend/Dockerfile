@@ -25,7 +25,7 @@ WORKDIR /app
 # Note: Gradle's output directory is build/libs
 COPY --from=builder /app/build/libs/*.jar app.jar
 
-EXPOSE 8000
+EXPOSE 8080
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]

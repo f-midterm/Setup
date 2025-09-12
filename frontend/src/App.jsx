@@ -1,19 +1,41 @@
 import React from 'react';
-// แก้ไข: เพิ่ม .jsx ต่อท้ายชื่อไฟล์เพื่อให้ Vite/React หาไฟล์เจอ
-import LoginPage from './LoginPage.jsx'; 
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
-// เราไม่ได้ใช้ App.css แล้ว เพราะใช้ Tailwind ใน LoginPage แทน จึงลบการ import นี้ออก
-// import './App.css'; 
+// Layouts
+import MainLayout from './layouts/MainLayout';
+
+// Components
+import PrivateRoute from './components/PrivateRoute';
+
+// Pages
+import LoginPage from './pages/LoginPage';
+import DashboardPage from './pages/DashboardPage';
+import TenantPage from './pages/TenantPage';
+import MaintenancePage from './pages/MaintenancePage';
+import DocumentPage from './pages/DocumentPage';
+
 
 function App() {
-  // ตอนนี้ให้ App แสดงผลแค่หน้า LoginPage
-  // ลบ className="App" ออกได้ เพราะเราไม่ได้ใช้ CSS จาก App.css แล้ว
   return (
-    <div>
-      <LoginPage />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* Why: เปลี่ยนโครงสร้างให้ PrivateRoute ครอบ MainLayout */}
+        {/* ทำให้ทุกๆหน้าที่อยู่ข้างใน (children) ต้อง Login ก่อน และจะมี Layout แบบเดียวกันทั้งหมด */}
+        <Route path="/" element={<PrivateRoute />}>
+          <Route element={<MainLayout />}>
+            <Route index element={<DashboardPage />} />
+            <Route path="tenants" element={<TenantPage />} />
+            <Route path="maintenance" element={<MaintenancePage />} />
+            <Route path="documents" element={<DocumentPage />} />
+          </Route>
+        </Route>
+
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Router>
   );
 }
 
 export default App;
-
