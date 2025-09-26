@@ -42,21 +42,21 @@ pipeline {
         }
 
         // Stage 3: Build Docker images for both services
-        stage('Build Docker Images') {
-            steps {
-                script {
-                    echo "Building Backend Docker image..."
-                    // We use the git commit hash as the image tag for precise versioning.
-                    def backendImageTag = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                    // The 'docker.build' command from the Docker Pipeline plugin builds the image.
-                    docker.build("${DOCKER_IMAGE_PREFIX}/backend:${backendImageTag}", './backend')
+        // stage('Build Docker Images') {
+        //     steps {
+        //         script {
+        //             echo "Building Backend Docker image..."
+        //             // We use the git commit hash as the image tag for precise versioning.
+        //             def backendImageTag = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+        //             // The 'docker.build' command from the Docker Pipeline plugin builds the image.
+        //             docker.build("${DOCKER_IMAGE_PREFIX}/backend:${backendImageTag}", './backend')
 
-                    echo "Building Frontend Docker image..."
-                    def frontendImageTag = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                    docker.build("${DOCKER_IMAGE_PREFIX}/frontend:${frontendImageTag}", './frontend')
-                }
-            }
-        }
+        //             echo "Building Frontend Docker image..."
+        //             def frontendImageTag = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+        //             docker.build("${DOCKER_IMAGE_PREFIX}/frontend:${frontendImageTag}", './frontend')
+        //         }
+        //     }
+        // }
         
         /*
         // -----------------------------------------------------------------
