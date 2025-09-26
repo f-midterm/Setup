@@ -32,6 +32,7 @@ pipeline {
                 // We execute the Gradle wrapper to ensure a consistent build environment.
                 // 'clean' removes previous build artifacts, and 'build' compiles and tests the code.
                 dir('backend') {
+                    sh 'chmod +x ./gradlew' 
                     sh './gradlew clean build'
                 }
             }
