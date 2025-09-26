@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jenkins-ci.plugins</groupId>
   <artifactId>github-branch-source</artifactId>
-  <version>1864.v411feec5e78e</version>
+  <version>1869.vdb_846d75405b_</version>
   <packaging>hpi</packaging>
   <name>GitHub Branch Source Plugin</name>
   <description>Multibranch projects and organization folders from GitHub. Maintained by CloudBees, Inc.</description>
@@ -19,7 +19,7 @@
   <scm>
     <connection>scm:git:https://github.com/jenkinsci/github-branch-source-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/github-branch-source-plugin.git</developerConnection>
-    <tag>411feec5e78e36a343d2a24337190354c594d670</tag>
+    <tag>db846d75405bcf9b27299cfc1dec5c05e18c73d3</tag>
     <url>https://github.com/jenkinsci/github-branch-source-plugin</url>
   </scm>
   <distributionManagement>
@@ -36,25 +36,25 @@
     <dependency>
       <groupId>com.coravy.hudson.plugins.github</groupId>
       <artifactId>github</artifactId>
-      <version>1.43.0</version>
+      <version>1.44.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>caffeine-api</artifactId>
-      <version>3.2.0-166.v72a_6d74b_870f</version>
+      <version>3.2.2-178.v353b_8428ed56</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>commons-lang3-api</artifactId>
-      <version>3.17.0-87.v5cf526e63b_8b_</version>
+      <version>3.18.0-98.v3a_674c06072d</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>ionicons-api</artifactId>
-      <version>88.va_4187cb_eddf1</version>
+      <version>94.vcc3065403257</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -72,7 +72,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>credentials</artifactId>
-      <version>1415.v831096eb_5534</version>
+      <version>1419.v2337d1ceceef</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -84,7 +84,7 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-support</artifactId>
-      <version>968.v8f17397e87b_8</version>
+      <version>976.vb_d9493c2eb_09</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -111,7 +111,7 @@
       <plugin>
         <groupId>org.jenkins-ci.tools</groupId>
         <artifactId>maven-hpi-plugin</artifactId>
-        <version>3.66</version>
+        <version>3.1746.v2e9fe7dc4d95</version>
         <extensions>true</extensions>
       </plugin>
     </plugins>
