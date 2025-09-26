@@ -33,8 +33,8 @@ pipeline {
                 // 'clean' removes previous build artifacts, and 'build' compiles and tests the code.
                 dir('backend') {
                     // FIX: Add execute permission to the gradlew script
-                    sh 'chmod +x ./gradlew' 
-                    
+                    sh 'chmod +x ./gradlew'
+
                     // Now, run the build command
                     sh './gradlew clean build'
                 }
@@ -57,7 +57,7 @@ pipeline {
         //         }
         //     }
         // }
-        
+
         /*
         // -----------------------------------------------------------------
         // Stage 4: End-to-End Testing with Cypress (Commented out for now)
@@ -99,14 +99,66 @@ pipeline {
         */
 
         // Stage 5: Deploy the Application
-        stage('Deploy') {
-            steps {
-                echo 'Deploying application using Docker Compose...'
-                // This command starts all services in detached mode.
-                // In a real production environment, this step would be more complex,
-                // likely involving SSHing to a remote server and running the command there.
-                sh 'docker-compose -f docker-compose.yml up -d'
-            }
-        }
+        // stage('Deploy') {
+        //     steps {
+        //         echo 'Deploying application using Docker Compose...'
+        //         // This command starts all services in detached mode.
+        //         // In a real production environment, this step would be more complex,
+        //         // likely involving SSHing to a remote server and running the command there.
+        //         sh 'docker-compose -f docker-compose.yml up -d'
+        //     }
+        // }
+        
+        // stage('Push to Registry') {
+        //     steps {
+        //         script {
+        //             def imageTag = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+        //             // Assumes you have configured Docker Hub credentials in Jenkins with ID 'dockerhub-credentials'
+        //             docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-credentials') {
+        //                 echo "Pushing Backend image..."
+        //                 docker.image("${DOCKER_IMAGE_PREFIX}/backend:${imageTag}").push()
+
+        //                 echo "Pushing Frontend image..."
+        //                 docker.image("${DOCKER_IMAGE_PREFIX}/frontend:${imageTag}").push()
+        //             }
+        //         }
+        //     }
+        // }
+
+        // stage('Deploy to Production') {
+        //     steps {
+        //         script {
+        //             def imageTag = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+        //             // Assumes you have configured SSH credentials in Jenkins with ID 'prod-server-ssh'
+        //             sshagent(credentials: ['prod-server-ssh']) {
+        //                 // Replace 'user@your-server-ip' with your actual server details
+        //                 sh """
+        //                     ssh -o StrictHostKeyChecking=no user@your-server-ip << 'EOF'
+                              
+        //                       # 1. Login to the Docker Registry on the remote server
+        //                       docker login -u YOUR_DOCKER_USER -p YOUR_DOCKER_TOKEN
+
+        //                       # 2. Navigate to the project directory
+        //                       cd /path/to/your/app
+
+        //                       # 3. Set the image tag as an environment variable
+        //                       export BACKEND_IMAGE_TAG=${imageTag}
+        //                       export FRONTEND_IMAGE_TAG=${imageTag}
+
+        //                       # 4. Pull the latest images
+        //                       docker compose pull
+
+        //                       # 5. Start the new containers
+        //                       docker compose up -d
+
+        //                       # 6. Clean up old, unused images
+        //                       docker image prune -f
+
+        //                     EOF
+        //                 """
+        //             }
+        //         }
+        //     }
+        // }
     }
 }
